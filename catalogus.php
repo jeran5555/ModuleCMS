@@ -1,25 +1,30 @@
 <?php include 'includes/header.php'; ?>
 <?php include 'includes/nav.php'; ?>
+<?php include 'includes/db_connect.php'; ?>
 
 <main class="content container">
   <h2>Onze Motoren</h2>
 
   <div class="motoren-grid">
     <?php
-      $motoren = [
-        ["naam" => "Yamaha MT-09", "afbeelding" => "assets/images/mt09.jpg"],
-        ["naam" => "Kawasaki Z900", "afbeelding" => "assets/images/z900.jpg"],
-        ["naam" => "Ducati Monster", "afbeelding" => "assets/images/monster.jpg"],
-        ["naam" => "BMW S1000R", "afbeelding" => "assets/images/s1000r.jpg"],
-      ];
+      $sql = "SELECT * FROM motoren ORDER BY merk ASC";
+      $result = $conn->query($sql);
 
-      foreach ($motoren as $motor) {
-        echo '<div class="motor-card">';
-        echo '<img src="' . $motor["afbeelding"] . '" alt="' . $motor["naam"] . '">';
-        echo '<h3>' . $motor["naam"] . '</h3>';
-        echo '<a href="#" class="btn-small">Bekijk meer</a>';
-        echo '</div>';
+      if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+          echo "<div class='motor-card'>
+        <img src='" . htmlspecialchars($row['afbeelding']) . "' alt='" . htmlspecialchars($row['naam']) . "'>
+        <h3>" . htmlspecialchars($row['merk']) . " " . htmlspecialchars($row['naam']) . "</h3>
+        <p>" . htmlspecialchars($row['beschrijving']) . "</p>
+        <a href='detail.php?id=" . $row['id'] . "' class='btn'>Bekijk details</a>
+      </div>";
+
+        }
+      } else {
+        echo '<p>Geen motoren gevonden in de database.</p>';
       }
+
+      $conn->close();
     ?>
   </div>
 </main>
